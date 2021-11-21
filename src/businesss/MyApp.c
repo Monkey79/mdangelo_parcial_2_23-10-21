@@ -39,7 +39,7 @@ void _checkUsrSelection(LinkedList** arcadesLList,LinkedList** gamesLList, int u
 	switch (usrSlct) {
 		case 1:
 			printf("-leer arcade-\n");
-			gs_chargeGamesFromFile(gamesLList);
+			//gs_chargeGamesFromFile(gamesLList);
 			as_chargeArcadeFromFile(arcadesLList,gamesLList);
 			break;
 		case 2:
@@ -56,8 +56,10 @@ void _checkUsrSelection(LinkedList** arcadesLList,LinkedList** gamesLList, int u
 			break;
 		case 5:
 			printf("-imprimir arcade-\n");
-			gs_printAllGames(*gamesLList);
+			//gs_printAllGames(*gamesLList);
 			as_printAllArcades(*arcadesLList, *gamesLList);
+
+			as_printAllArcadesSortByGame(arcadesLList,gamesLList);
 			break;
 		case 6:
 			printf("-generar juegos-\n");

@@ -31,11 +31,13 @@
 
 
 int as_chargeArcadeFromFile(LinkedList** arcadesLList,LinkedList** gamesLList);
+int as_createGameFile(LinkedList** arcadesLList,LinkedList** gamesLList);
 
 int as_createNewArcade(LinkedList** arcadesLList,LinkedList** gamesLList);
 int as_updateArcade(LinkedList** arcadesLList,LinkedList** gamesLList);
 int as_deleteArcade(LinkedList** arcadesLList,LinkedList** gamesLList);
 
 void as_printAllArcades(LinkedList* arcLList,LinkedList* gameLList);
+void as_printAllArcadesSortByGame(LinkedList** arcLList,LinkedList** gameLList);
 
 #endif /* SERVICES_ARCADESRVC_H_ */

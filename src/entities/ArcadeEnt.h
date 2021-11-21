@@ -19,7 +19,8 @@ typedef struct{
 	int arcCoinsCap;
 	char arcSaloonName[STR_200];
 
-	int arcGameId;
+	int arcGameId; //deprecated
+	char arcGameName[STR_63];
 }ArcadeEnt;
 
 #endif /* ENTITIES_ARCADEENT_H_ */

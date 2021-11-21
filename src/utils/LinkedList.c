@@ -223,7 +223,6 @@ int ll_deleteLinkedList(LinkedList *this) {
 }
 
 /** \brief Busca el indice de la primer ocurrencia del elemento pasado como parametro
- *
  * \param this LinkedList* Puntero a la lista
  * \param pElement void* Puntero al elemento
  * \return int Retorna  (-1) Error: si el puntero a la lista es NULL

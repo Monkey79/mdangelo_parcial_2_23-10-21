@@ -7,7 +7,9 @@
 
 #include "ArcadeSrvc.h"
 
+//----Private-----
 void _writeArcadesFile(LinkedList* arcLList,LinkedList* gmLList);
+int _isGameIdLessThanNext(void* pElm1, void* pElm2);
 
 int as_chargeArcadeFromFile(LinkedList** arcadesLList,LinkedList** gamesLList){
 	int success = TRUE;
@@ -26,7 +28,7 @@ int as_chargeArcadeFromFile(LinkedList** arcadesLList,LinkedList** gamesLList){
 				//leo registro
 				cnt = fscanf(arcFile, ARCADE_REGEX, arcDto.arcIdStr, arcDto.arcCtzshpStr, arcDto.arcSndTypeStr,arcDto.arcPlyAmntStr,arcDto.arcCoinsCapStr,arcDto.arcSaloonName,arcDto.arcGameName);
 				if(cnt==7){
-					arcDto.arcGameId = gr_getGameIdByName(*gamesLList,arcDto.arcGameName); //busco id de juego por su nombre
+					//arcDto.arcGameId = gr_getGameIdByName(*gamesLList,arcDto.arcGameName); //busco id de juego por su nombre
 					arcEnt = ar_createNewArcade(arcDto); //creo arcade a partir de su dto
 					if(arcEnt!=NULL){
 						ll_add(*arcadesLList,arcEnt);
@@ -34,8 +36,34 @@ int as_chargeArcadeFromFile(LinkedList** arcadesLList,LinkedList** gamesLList){
 				}
 			} while (!feof(arcFile));
 		}
+		as_createGameFile(arcadesLList, gamesLList);
 	}
 	fclose(arcFile);
+	return success;
+}
+
+int as_createGameFile(LinkedList** arcadesLList,LinkedList** gamesLList){
+	int success = TRUE;
+	int arLn;
+	GameEnt* gmEnt;
+	ArcadeEnt* arEnt;
+	char gmIdStr[STR_200];
+	int newId=0;
+
+	if(*arcadesLList != NULL && *gamesLList != NULL){
+		arLn = ll_len(*arcadesLList);
+		for(int i=0; i<arLn; i++){
+			arEnt = ll_get(*arcadesLList, i);
+			sprintf(gmIdStr, "%d",(i+1));
+			gmEnt = gs_createNewGameEnt(gmIdStr,arEnt->arcGameName);
+			if(!gs_gameAlreadyExist(*gamesLList, gmEnt->gameName)){
+				gmEnt->gameId = ++newId;
+				ll_add(*gamesLList, gmEnt);
+			}
+		}
+		gs_writeGames(*gamesLList);
+	}
+
 	return success;
 }
 
@@ -171,9 +199,16 @@ void as_printAllArcades(LinkedList* arcLList,LinkedList* gameLList){
 			gr_getGameNameById(gameLList,arcEnt->arcGameId,arcGameName); //obtengo nombre del juego segun su id
 			printf("-arcade.id=%d | arcade.nacionalidad=%s | arcade.tipo_sonido=%s | arcade.jugadores=%d | arcade.fichas=%d | arcade.salon=%s | arcade.juego=%s\n"
 					,arcEnt->arcId, arcEnt->arcCitizenship,sndType,arcEnt->arcPlyAmount, arcEnt->arcCoinsCap, arcEnt->arcSaloonName,
-					arcGameName);
+					arcEnt->arcGameName);
 		}
 	}
+}
+
+void as_printAllArcadesSortByGame(LinkedList** arcLList,LinkedList** gameLList){
+	if(arcLList!=NULL && *gameLList!=NULL){
+		ll_sort(*arcLList, _isGameIdLessThanNext, 0); //[1] Indica orden ascendente - [0] Indica orden descendente
+	}
+	as_printAllArcades(*arcLList,*gameLList);
 }
 
 
@@ -213,5 +248,13 @@ void _writeArcadesFile(LinkedList* arcLList,LinkedList* gmLList){
 		}
 		fclose(arcFile);
 	}
+}
+//[1] Indica orden ascendente - [0] Indica orden descendente
+int _isGameIdLessThanNext(void* pElm1, void* pElm2){
+	int rst;
+	ArcadeEnt* arc1 = (ArcadeEnt *) pElm1;
+	ArcadeEnt* arc2 = (ArcadeEnt *) pElm2;
+	rst = (strcmp(arc1->arcGameName, arc2->arcGameName)<0)?-1:(strcmp(arc1->arcGameName, arc2->arcGameName)==0)?-1:1;
+	return rst;
 }
 

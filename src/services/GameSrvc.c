@@ -9,6 +9,10 @@
 
 void _writeGamesFile(LinkedList* gmLList);
 
+GameEnt* gs_createNewGameEnt(char* gmId, char* gmName){
+	return gr_createGame(gmId, gmName);
+}
+
 int gs_chargeGamesFromFile(LinkedList** gamesLList){
 	int success = TRUE;
 	FILE* gmFile = NULL;
@@ -37,6 +41,17 @@ int gs_chargeGamesFromFile(LinkedList** gamesLList){
 		success = FALSE;
 
 	fclose(gmFile);
+	return success;
+}
+
+int gs_writeGames(LinkedList* gmLList){
+	int success = TRUE;
+
+	if(gmLList!=NULL){
+		_writeGamesFile(gmLList);
+	}else
+		success = FALSE;
+
 	return success;
 }
 
@@ -78,8 +93,19 @@ void gs_printAllGames(LinkedList* gameLList){
 int gs_getGameNameById(LinkedList* gmLList,int gameId,char* gameName){
 	return gr_getGameNameById(gmLList, gameId, gameName);
 }
+
 int gs_getGameIdByName(LinkedList* gmLList,char* gameName){
 	return gr_getGameIdByName(gmLList, gameName);
+}
+
+int gs_gameAlreadyExist(LinkedList* gmLList,char* gameName){
+	GameEnt* gmEnt=NULL;
+	int match = FALSE;
+	for (int i = 0; i < gmLList->size && !match; i++) {
+		gmEnt = ll_get(gmLList, i);
+		match = (strcmp(gmEnt->gameName, gameName)==0)?TRUE:FALSE;
+	}
+	return match;
 }
 
 

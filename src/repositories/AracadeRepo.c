@@ -20,6 +20,7 @@ ArcadeEnt* ar_createNewArcade(ArcadeDto arcDto){
 			arcEnt->arcSoundType = 2;
 		}
 		arcEnt->arcGameId = arcDto.arcGameId;
+		strcpy(arcEnt->arcGameName, arcDto.arcGameName);
 		arcEnt->arcPlyAmount = atoi(arcDto.arcPlyAmntStr);
 		arcEnt->arcCoinsCap = atoi(arcDto.arcCoinsCapStr);
 		strcpy(arcEnt->arcSaloonName, arcDto.arcSaloonName);

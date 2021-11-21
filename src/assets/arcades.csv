@@ -9,3 +9,13 @@ id,nacionalidad,tipo_sonido,cant_jug,fichas_max,salon,game
 8,Japan,MONO,2,396,Salon 1,Space Invaders
 9,Russia,MONO,5,498,Salon 2021,Out Run
 10,Indonesia,STEREO,2,320,Salon 2021,Virtual Cop
+11,China,MONO,4,278,Salon Carreras,Space Invaders
+12,Portugal,STEREO,1,476,Salon 6,Frogger
+13,Philippines,MONO,5,124,Salon Retro,Tron
+14,Indonesia,STEREO,2,347,Salon Carreras,Metal Slug
+15,Sweden,STEREO,3,434,Salon 3,Out Run
+16,Russia,MONO,1,306,Salon VR,Metal Slug
+17,Madagascar,MONO,1,333,Salon 6,Out Run
+18,Sweden,MONO,2,380,Salon 2021,Virtual Cop
+19,Ethiopia,MONO,2,105,Salon 6,Virtual Cop
+20,Brazil,MONO,3,343,Salon 3,Pong
