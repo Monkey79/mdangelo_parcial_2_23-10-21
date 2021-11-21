@@ -1,0 +1,11 @@
+id,nacionalidad,tipo_sonido,cant_jug,fichas_max,salon,game
+1,China,STEREO,1,365,Salon 2021,Metal Slug
+2,China,STEREO,1,280,Salon 2,Mortal Kombat
+3,Philippines,STEREO,5,414,Salon Carreras,Bubble Bobble
+4,United States,STEREO,3,315,Salon 6,Mortal Kombat
+5,China,STEREO,5,443,Salon 3,Tetris
+6,Indonesia,STEREO,2,481,Salon Retro,Mortal Kombat
+7,Indonesia,MONO,2,428,Salon 1,Bubble Bobble
+8,Japan,MONO,2,396,Salon 1,Space Invaders
+9,Russia,MONO,5,498,Salon 2021,Out Run
+10,Indonesia,STEREO,2,320,Salon 2021,Virtual Cop
