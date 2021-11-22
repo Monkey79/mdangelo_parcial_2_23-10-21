@@ -8,19 +8,23 @@
 void _checkUsrSelection(LinkedList** arcadesLList,LinkedList** gamesLList, int usrSlct);
 
 void ma_startApplication(void) {
-	char* menuItems[] = {"1-Leer arcades desde archivo csv (modo texto)-",
-			"2-Incorporar arcade-",
-			"3-Modificar arcade-",
-			"4-Eliminar arcade-",
-			"5-Imprimir arcades-",
-			"6-Generar archivo juego-",
-			"7-Generar archivo multi-jugador-",
-			"8-Actualizar cantidad de fichas-",
-			"0--SALIR--",};
+	//"1-Leer arcades desde archivo csv (modo texto)-",
+	char* menuItems[] = {
+				"1-Incorporar arcade-",
+				"2-Modificar arcade-",
+				"3-Eliminar arcade-",
+				"4-Imprimir arcades (ord nombre de juego)-",
+				"5-Generar archivo juego (y mostrarlo)-",
+				"6-Generar archivo multi-jugador-",
+				"7-Actualizar cantidad de fichas-",
+				"8-Imprimir arcades y juegos (sin ordenar)-",
+				"0--SALIR--"};
 
 	LinkedList* arcadesLList = ll_newLinkedList();
 	LinkedList* gamesLList = ll_newLinkedList();
 	int usrSlct;
+
+	_checkUsrSelection(&arcadesLList, &gamesLList,10);
 
 	if(arcadesLList != NULL){
 		do {
@@ -37,38 +41,43 @@ void ma_startApplication(void) {
 
 void _checkUsrSelection(LinkedList** arcadesLList,LinkedList** gamesLList, int usrSlct){
 	switch (usrSlct) {
-		case 1:
+		case 10:
 			printf("-leer arcade-\n");
-			//gs_chargeGamesFromFile(gamesLList);
+			//gs_chargeGamesFromFile(gamesLList);//deprecated
 			as_chargeArcadeFromFile(arcadesLList,gamesLList);
 			break;
-		case 2:
+		case 1:
 			printf("-crear arcade-\n");
 			as_createNewArcade(arcadesLList, gamesLList);
 			break;
-		case 3:
+		case 2:
 			printf("-modificar arcade-\n");
 			as_updateArcade(arcadesLList, gamesLList);
 			break;
-		case 4:
+		case 3:
 			printf("-eliminar arcade-\n");
 			as_deleteArcade(arcadesLList, gamesLList);
 			break;
-		case 5:
+		case 4:
 			printf("-imprimir arcade-\n");
-			//gs_printAllGames(*gamesLList);
-			as_printAllArcades(*arcadesLList, *gamesLList);
-
 			as_printAllArcadesSortByGame(arcadesLList,gamesLList);
 			break;
-		case 6:
+		case 5:
 			printf("-generar juegos-\n");
+			gs_printAllGames(*gamesLList);
+			break;
+		case 6:
+			printf("-generar multi-jugador-\n");
+			as_createMultiPlayerFile(arcadesLList);
 			break;
 		case 7:
-			printf("-generar multi-jugador-\n");
+			printf("-actualizar fichas-\n");
+			as_upgradeCoinsCapacity(arcadesLList);
 			break;
 		case 8:
-			printf("-actualizar fichas-\n");
+			printf("-imprimir todo (sin ordenar)-\n");
+			as_printAllArcades(*arcadesLList);
+			gs_printAllGames(*gamesLList);
 			break;
 		default:
 			printf("-SIN DEFINIR-\n");

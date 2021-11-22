@@ -21,5 +21,6 @@ void su_getStringValueConditional(char* mssg, char* vlStr, char* cond1, char* co
 int su_cleanString(char* strValue, int length);
 int str_getStringSize(char* strValue, int length);
 char str_getYesNoQstion(char* strMssg);
+void su_getAlphabeticStringValue(char* mssg,char* vlStr);
 
 #endif /* UTILS_STRINGUTIL_H_ */

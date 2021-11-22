@@ -14,13 +14,11 @@ int iu_isIncluded(int opt,int from, int until){
 
 int iu_getPositiveIntegerValue(char* mmsg){
 	int value;
-
 	do {
 		printf("%s",mmsg);
 		__fpurge(stdin);
 		scanf("%d",&value);
 	} while (value<0);
-
 	return value;
 }
 

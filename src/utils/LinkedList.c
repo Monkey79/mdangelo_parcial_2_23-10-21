@@ -466,6 +466,59 @@ int ll_sort(LinkedList *this, int (*pFunc)(void*, void*), int order) {
 	return returnAux;
 }
 
+/** \brief Filtra los elementos de la lista utilizando
+ * la funcion criterio recibida como parametro
+ * \param pList LinkedList* Puntero a la lista
+ * \param pFunc (*pFunc) Puntero a la funcion criterio
+ * \return int Retorna  (-1) Error: si el puntero a la listas es NULL
+ * (0) Si ok
+ */
+int ll_filter(LinkedList *this, int (*pFnFlt)(void*)){
+	int rtn = -1;
+	void* pElm; //elemento del nodo
+	int criterio;
+
+	if(this != NULL && pFnFlt!= NULL){
+		for (int i=ll_len(this)-1; i>=0; i--){
+			pElm = ll_get(this,i);
+			if(pElm != NULL){
+				criterio = pFnFlt(pElm);
+				if(criterio==0){ //si el criterio da 0 (no se cumple) lo elimino
+					rtn = ll_remove(this,i);
+				}
+			}
+			rtn = 0;
+		}
+	}
+	return rtn;
+}
+
+/** \brief Mapea (modifica) los elementos de la lista utilizando
+ * la funcion criterio recibida como parametro
+ * \param pList LinkedList* Puntero a la lista
+ * \param pFunc (*pFunc) Puntero a la funcion criterio
+ * \return int Retorna  (-1) Error: si el puntero a la listas es NULL
+ * (0) Si ok
+ */
+int ll_map(LinkedList* this, int (*pFnMap)(void*)){
+	int rtn = -1;
+	int llen;
+	void* pElm; //elemento del nodo
+
+	if(this != NULL && pFnMap!= NULL){
+		llen = ll_len(this);
+		for (int i = 0; i < llen; i++){
+			pElm = ll_get(this,i);
+			if(pElm != NULL) pFnMap(pElm);
+			rtn = 0;
+		}
+	}
+	return rtn;
+}
+
+
+
+//------------Private----------------------------
 void _swapNodes(Node* pNodeA, Node* pNodeB){
 	void *pAux;
 	pAux = pNodeA->pElement;

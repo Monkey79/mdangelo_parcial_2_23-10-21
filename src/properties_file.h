@@ -12,11 +12,11 @@
 #define STR_63 64
 #define STR_6 7
 
-
-
 #define TRUE 1
 #define FALSE 0
 #define EXIT 0
+
+#define PLAYER_TOP 1
 
 //----Messages------
 #define MAIN_ERROR "Error principal no se puede seguir con el programa\n"
@@ -25,6 +25,7 @@
 //---Files---
 #define ARCADE_FILE "src/assets/arcades.csv"
 #define GAME_FILE "src/assets/games.csv"
+#define ARCADE_MP_FILE "src/assets/multijugador.csv"
 
 //---Regex----
 #define ARCADE_REGEX "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^\n]\n"

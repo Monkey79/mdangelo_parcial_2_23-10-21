@@ -8,8 +8,10 @@
 #include "ArcadeSrvc.h"
 
 //----Private-----
-void _writeArcadesFile(LinkedList* arcLList,LinkedList* gmLList);
-int _isGameIdLessThanNext(void* pElm1, void* pElm2);
+void _writeArcadesFile(LinkedList* arcLList,char* fileName);
+int _isGameNameLessThan(void* pElm1, void* pElm2);
+int _hasTheArcadeMoreThanNPlayer(void* pElm);
+int _upgradeCoinsCapacity(void* pElm);
 
 int as_chargeArcadeFromFile(LinkedList** arcadesLList,LinkedList** gamesLList){
 	int success = TRUE;
@@ -36,7 +38,7 @@ int as_chargeArcadeFromFile(LinkedList** arcadesLList,LinkedList** gamesLList){
 				}
 			} while (!feof(arcFile));
 		}
-		as_createGameFile(arcadesLList, gamesLList);
+		as_createGameFile(arcadesLList, gamesLList); //[punto-6] luego de tener el llist de arcades inmediatamente despues creo el llist de juegos sin repetir
 	}
 	fclose(arcFile);
 	return success;
@@ -56,14 +58,13 @@ int as_createGameFile(LinkedList** arcadesLList,LinkedList** gamesLList){
 			arEnt = ll_get(*arcadesLList, i);
 			sprintf(gmIdStr, "%d",(i+1));
 			gmEnt = gs_createNewGameEnt(gmIdStr,arEnt->arcGameName);
-			if(!gs_gameAlreadyExist(*gamesLList, gmEnt->gameName)){
+			if(!gs_gameAlreadyExist(*gamesLList, gmEnt->gameName)){ //si NO existe en la lista lo adjunto
 				gmEnt->gameId = ++newId;
 				ll_add(*gamesLList, gmEnt);
 			}
 		}
-		gs_writeGames(*gamesLList);
+		gs_writeGames(*gamesLList); //genero archito txt "games.csv"
 	}
-
 	return success;
 }
 
@@ -75,7 +76,7 @@ int as_createNewArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 
 	if(arcEnt != NULL){
 		sprintf(arcDto.arcIdStr, "%d",arcEnt->arcId+1);
-		su_getStringValue("-ingrese nacionalidad del arcade-\n", arcDto.arcCtzshpStr);
+		su_getAlphabeticStringValue("-ingrese nacionalidad del arcade-\n", arcDto.arcCtzshpStr);
 		su_cleanString(arcDto.arcCtzshpStr, STR_100);
 		su_getStringValueConditional("-ingrese tipo de sonido [MONO-STEREO]-\n",arcDto.arcSndTypeStr,"MONO","STEREO");
 		su_cleanString(arcDto.arcSndTypeStr, STR_6);
@@ -83,13 +84,14 @@ int as_createNewArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 		su_cleanString(arcDto.arcPlyAmntStr, STR_6);
 		su_getStringValue("-ingrese capacidad max de fichas-\n",arcDto.arcCoinsCapStr);
 		su_cleanString(arcDto.arcCoinsCapStr, STR_6);
-		su_getStringValue("-ingrese nombre del salon que pertenece-\n",arcDto.arcSaloonName);
+		su_getAlphabeticStringValue("-ingrese nombre del salon que pertenece-\n",arcDto.arcSaloonName);
 		su_cleanString(arcDto.arcSaloonName, STR_200);
 
 		gs_printAllGames(*gamesLList);
-		su_getStringValue("--de los siguientes juegos ingrese un juego valido--\n",arcDto.arcGameName);
+		su_getAlphabeticStringValue("--de los siguientes juegos ingrese un nombre de juego valido--\n",arcDto.arcGameName);
 		su_cleanString(arcDto.arcGameName, STR_200);
 
+		//cuando se crea un arcade nuevo y el juego que ingresa el usuario NO existe lo creo y actualizo el archivo "games.csv"
 		gs_ifNotExistCreate(gamesLList,arcDto.arcGameName);
 		arcDto.arcGameId = gs_getGameIdByName(*gamesLList, arcDto.arcGameName);
 
@@ -97,7 +99,7 @@ int as_createNewArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 		rst = ll_add(*arcadesLList, arcEnt);
 
 		if(!rst){
-			_writeArcadesFile(*arcadesLList,*gamesLList);
+			_writeArcadesFile(*arcadesLList,ARCADE_FILE);
 		}else
 			printf("--error creacion de nuevo arcade--\n");
 	}
@@ -117,7 +119,7 @@ int as_updateArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 
 
 	do {
-		as_printAllArcades(*arcadesLList, *gamesLList);
+		as_printAllArcades(*arcadesLList);
 		arcId = iu_getPositiveIntegerValue("-de los siguientes arcades seleccione un id valido para modificar--\n");
 
 		for(int i=0;i<(*arcadesLList)->size && !match;i++){
@@ -129,7 +131,7 @@ int as_updateArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 	arcPlyAm = iu_getPositiveIntegerValue("-ingrese cantidad de jugadores-\n");
 
 	gs_printAllGames(*gamesLList);
-	su_getStringValue("--de los siguientes juegos ingrese un juego valido--\n",arcGame);
+	su_getAlphabeticStringValue("--de los siguientes juegos ingrese un nombre de juego valido--\n",arcGame);
 	su_cleanString(arcGame, STR_200);
 	gs_ifNotExistCreate(gamesLList,arcGame);
 
@@ -138,7 +140,8 @@ int as_updateArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 	if(qst=='S'){
 		arcEntUpd->arcPlyAmount = arcPlyAm;
 		arcEntUpd->arcGameId = gs_getGameIdByName(*gamesLList, arcGame);
-		_writeArcadesFile(*arcadesLList,*gamesLList);
+		strcpy(arcEntUpd->arcGameName, arcGame);
+		_writeArcadesFile(*arcadesLList, ARCADE_FILE);
 		printf("--actualizacion correcta--\n");
 	}else{
 		printf("-actualizacion cancelada-\n");
@@ -158,7 +161,7 @@ int as_deleteArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 	char qst;
 
 	do {
-		as_printAllArcades(*arcadesLList, *gamesLList);
+		as_printAllArcades(*arcadesLList);
 		arcId = iu_getPositiveIntegerValue("-de los siguientes arcades seleccione un id valido para modificar--\n");
 
 		for(int i=0;i<(*arcadesLList)->size && !match;i++){
@@ -176,7 +179,7 @@ int as_deleteArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 		}
 		if(success==0){
 			printf("--eliminacion exitosa--\n");
-			_writeArcadesFile(*arcadesLList, *gamesLList);
+			_writeArcadesFile(*arcadesLList, ARCADE_FILE);
 		}
 	}else{
 		printf("-eliminacion cancelada-\n");
@@ -186,17 +189,15 @@ int as_deleteArcade(LinkedList** arcadesLList,LinkedList** gamesLList){
 	return success;
 }
 
-void as_printAllArcades(LinkedList* arcLList,LinkedList* gameLList){
+void as_printAllArcades(LinkedList* arcLList){
 	ArcadeEnt* arcEnt;
 	int arcLen;
 	char sndType[STR_6];
-	char arcGameName[STR_200];
 	if(arcLList!=NULL){
 		arcLen = arcLList->size;
 		for(int i=0; i<arcLen;i++){
 			arcEnt = ll_get(arcLList, i); //obtengo elemento
 			strcpy(sndType,(arcEnt->arcSoundType==1)?"MONO":(arcEnt->arcSoundType==2)?"STEREO":"UNDEFINED");//convierto a mono o stereo (segun corresponda)
-			gr_getGameNameById(gameLList,arcEnt->arcGameId,arcGameName); //obtengo nombre del juego segun su id
 			printf("-arcade.id=%d | arcade.nacionalidad=%s | arcade.tipo_sonido=%s | arcade.jugadores=%d | arcade.fichas=%d | arcade.salon=%s | arcade.juego=%s\n"
 					,arcEnt->arcId, arcEnt->arcCitizenship,sndType,arcEnt->arcPlyAmount, arcEnt->arcCoinsCap, arcEnt->arcSaloonName,
 					arcEnt->arcGameName);
@@ -206,19 +207,43 @@ void as_printAllArcades(LinkedList* arcLList,LinkedList* gameLList){
 
 void as_printAllArcadesSortByGame(LinkedList** arcLList,LinkedList** gameLList){
 	if(arcLList!=NULL && *gameLList!=NULL){
-		ll_sort(*arcLList, _isGameIdLessThanNext, 0); //[1] Indica orden ascendente - [0] Indica orden descendente
+		ll_sort(*arcLList, _isGameNameLessThan, 0); //[1] Indica orden ascendente - [0] Indica orden descendente
 	}
-	as_printAllArcades(*arcLList,*gameLList);
+	as_printAllArcades(*arcLList);
 }
 
+void as_createMultiPlayerFile(LinkedList** arcadesLList){
+	LinkedList* cloneArcLList = ll_clone(*arcadesLList);
+	if(*arcadesLList!=NULL){
+		ll_filter(cloneArcLList, _hasTheArcadeMoreThanNPlayer); //filtro lista previamente clonada
+		as_printAllArcades(cloneArcLList);
+		_writeArcadesFile(cloneArcLList, ARCADE_MP_FILE);
+	}else{
+		printf("-no puedo generar nada desde una lista vacia o nula-\n");
+	}
+}
+
+//NOTE: Asumo como que se modifica la capc de fichas de todos los elementos de la lista
+//los mismos deben actualizarse, tambien, en el archivo arcades.csv
+void as_upgradeCoinsCapacity(LinkedList** arcadesLList){
+	char qst;
+	qst = str_getYesNoQstion("--¿Esta seguro de aplicar el cambio (impactara en toda la lista y en el archivo)? [S|N]--\n");
+	if(qst=='S'){
+		ll_map(*arcadesLList, _upgradeCoinsCapacity);
+		as_printAllArcades(*arcadesLList);
+		_writeArcadesFile(*arcadesLList, ARCADE_FILE); //actualizo el archivo arcades.csv
+	}else{
+		printf("--Actualizacion fichas CANCELADA--\n");
+	}
+}
 
 //------Private------------
-void _writeArcadesFile(LinkedList* arcLList,LinkedList* gmLList){
+void _writeArcadesFile(LinkedList* arcLList,char* fileName){
 	FILE* arcFile = NULL;
-	arcFile = fu_openFileByMode(ARCADE_FILE, "w"); //abro archivo
+	arcFile = fu_openFileByMode(fileName, "w"); //abro archivo
 
 	ArcadeEnt* arcEnt=NULL;
-	ArcadeDto arcDto;
+	ArcadeDto arcDto; //uso un Dto para para almacenar valores casteados a string
 	int gmLen;
 
 
@@ -232,29 +257,40 @@ void _writeArcadesFile(LinkedList* arcLList,LinkedList* gmLList){
 			strcpy(arcDto.arcSndTypeStr, (arcEnt->arcSoundType)==1?"MONO":(arcEnt->arcSoundType)==2?"STEREO":"UNDEFINED");
 			sprintf(arcDto.arcPlyAmntStr, "%d",arcEnt->arcPlyAmount);
 			sprintf(arcDto.arcCoinsCapStr, "%d",arcEnt->arcCoinsCap);
-			gs_getGameNameById(gmLList,arcEnt->arcGameId,arcDto.arcGameName);
 
 			if(i==gmLen-1){
 				fprintf(arcFile,"%s,%s,%s,%s,%s,%s,%s",arcDto.arcIdStr,
 											arcEnt->arcCitizenship,arcDto.arcSndTypeStr,
 											arcDto.arcPlyAmntStr,arcDto.arcCoinsCapStr,
-											arcEnt->arcSaloonName,arcDto.arcGameName);
+											arcEnt->arcSaloonName,arcEnt->arcGameName);
 			}else{
 				fprintf(arcFile,"%s,%s,%s,%s,%s,%s,%s\n",arcDto.arcIdStr,
 											arcEnt->arcCitizenship,arcDto.arcSndTypeStr,
 											arcDto.arcPlyAmntStr,arcDto.arcCoinsCapStr,
-											arcEnt->arcSaloonName,arcDto.arcGameName);
+											arcEnt->arcSaloonName,arcEnt->arcGameName);
 			}
 		}
 		fclose(arcFile);
 	}
 }
-//[1] Indica orden ascendente - [0] Indica orden descendente
-int _isGameIdLessThanNext(void* pElm1, void* pElm2){
+//[1]=Indica orden ascendente - [0]=Indica orden descendente
+int _isGameNameLessThan(void* pElm1, void* pElm2){
 	int rst;
 	ArcadeEnt* arc1 = (ArcadeEnt *) pElm1;
 	ArcadeEnt* arc2 = (ArcadeEnt *) pElm2;
 	rst = (strcmp(arc1->arcGameName, arc2->arcGameName)<0)?-1:(strcmp(arc1->arcGameName, arc2->arcGameName)==0)?-1:1;
 	return rst;
+}
+
+int _hasTheArcadeMoreThanNPlayer(void* pElm){
+	ArcadeEnt* arcEnt = (ArcadeEnt*) pElm;
+	return (arcEnt->arcPlyAmount > PLAYER_TOP);
+}
+
+int _upgradeCoinsCapacity(void* pElm){
+	int scss = TRUE;
+	ArcadeEnt* arc1 = (ArcadeEnt *) pElm;
+	arc1->arcCoinsCap *= 2;
+	return scss;
 }
 

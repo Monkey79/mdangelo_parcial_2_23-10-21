@@ -37,7 +37,9 @@ int as_createNewArcade(LinkedList** arcadesLList,LinkedList** gamesLList);
 int as_updateArcade(LinkedList** arcadesLList,LinkedList** gamesLList);
 int as_deleteArcade(LinkedList** arcadesLList,LinkedList** gamesLList);
 
-void as_printAllArcades(LinkedList* arcLList,LinkedList* gameLList);
+void as_printAllArcades(LinkedList* arcLList);
 void as_printAllArcadesSortByGame(LinkedList** arcLList,LinkedList** gameLList);
 
+void as_createMultiPlayerFile(LinkedList** arcadesLList);
+void as_upgradeCoinsCapacity(LinkedList** arcadesLList);
 #endif /* SERVICES_ARCADESRVC_H_ */

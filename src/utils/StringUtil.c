@@ -20,9 +20,21 @@ int su_showMatrixStrings(char* mssgs[],int len){
 }
 
 void su_getStringValue(char* mssg,char* vlStr){
-	printf("%s",mssg);
-	__fpurge(stdin);
-	scanf("%s",vlStr);
+	//[48,97] i>=48 && i<=97 sale
+	do {
+		printf("%s",mssg);
+		__fpurge(stdin);
+		scanf("%s",vlStr);
+	} while ((*vlStr<48 || *vlStr>97));
+}
+
+void su_getAlphabeticStringValue(char* mssg,char* vlStr){
+	//[65,90] || [97,122] == (i>=65 && i<=90) || (i>=97 && i<=122)
+	do {
+		printf("%s",mssg);
+		__fpurge(stdin);
+		scanf("%s",vlStr);
+	} while ((*vlStr<65 || *vlStr>90) && (*vlStr<97 || *vlStr>122));
 }
 
 void su_getStringValueConditional(char* mssg, char* vlStr, char* cond1, char* cond2){
